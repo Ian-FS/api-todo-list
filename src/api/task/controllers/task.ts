@@ -15,7 +15,7 @@ export default factories.createCoreController(
       }
 
       const tasks = await strapi.db.query('api::task.task').findMany({
-        where: { user: user.id },
+        where: { users_permissions_user: user.id },
       });
 
       return tasks;
@@ -29,7 +29,7 @@ export default factories.createCoreController(
       }
 
       // Adiciona o ID do usuário autenticado à nova tarefa
-      ctx.request.body.data.user = user.id;
+      ctx.request.body.data.users_permissions_user = user.id;
 
       // Chama o método padrão de criação para salvar a tarefa
       const response = await super.create(ctx);
@@ -51,7 +51,7 @@ export default factories.createCoreController(
       }
 
       // Verifica se a tarefa pertence ao usuário
-      if (task.user.id !== user.id) {
+      if (task.users_permissions_user.id !== user.id) {
         return ctx.unauthorized(
           'You do not have permission to update this task',
         );
@@ -78,7 +78,7 @@ export default factories.createCoreController(
       }
 
       // Verifica se a tarefa pertence ao usuário
-      if (task.user.id !== user.id) {
+      if (task.users_permissions_user.id !== user.id) {
         return ctx.unauthorized(
           'You do not have permission to delete this task',
         );
