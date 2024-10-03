@@ -14,6 +14,10 @@ export interface ApiTaskTask extends Struct.CollectionTypeSchema {
   attributes: {
     description: Schema.Attribute.String;
     done: Schema.Attribute.Boolean;
+    users_permissions_user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
@@ -496,6 +500,7 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    tasks: Schema.Attribute.Relation<'oneToMany', 'api::task.task'>;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
