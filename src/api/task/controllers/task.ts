@@ -14,22 +14,32 @@ export default factories.createCoreController(
         return ctx.unauthorized('Você deve estar logado para ver suas tarefas');
       }
 
-      const tasks = await strapi.db.query('api::task.task').findMany({
-        where: { users_permissions_user: user.id },
+      const tasks = await strapi.documents('api::task.task').findMany({
+        filters: {
+          user: {
+            id: user.id,
+          },
+        },
       });
 
       return tasks;
     },
 
     async create(ctx) {
-      // Pega o usuário autenticado via JWT
       const user = ctx.state.user;
+
+      // Verifica se existe conta logada
       if (!user) {
-        return ctx.unauthorized('You must be logged in to create a task');
+        return ctx.unauthorized(
+          'Você deve estar logado para editar suas tarefas',
+        );
       }
 
-      // Adiciona o ID do usuário autenticado à nova tarefa
-      ctx.request.body.data.users_permissions_user = user.id;
+      // Inicia a tarefa como não completada
+      ctx.request.body.data.done = false;
+
+      // Relaciona a tarefa ao usuário logado
+      ctx.request.body.data.user = user.documentId;
 
       // Chama o método padrão de criação para salvar a tarefa
       const response = await super.create(ctx);
@@ -38,23 +48,25 @@ export default factories.createCoreController(
 
     async update(ctx) {
       const user = ctx.state.user;
-      if (!user) {
-        return ctx.unauthorized('You must be logged in to update a task');
-      }
-
-      // Verifica se a tarefa existe
       const { id } = ctx.params;
-      const task = await strapi.service('api::task.task').findOne(id);
+
+      const task = await strapi.documents('api::task.task').findOne({
+        documentId: id,
+        filters: {
+          user: {
+            id: user.id,
+          },
+        },
+      });
+
+      if (!user) {
+        return ctx.unauthorized(
+          'Você deve estar logado para atualizar suas tarefas',
+        );
+      }
 
       if (!task) {
         return ctx.notFound('Task not found');
-      }
-
-      // Verifica se a tarefa pertence ao usuário
-      if (task.users_permissions_user.id !== user.id) {
-        return ctx.unauthorized(
-          'You do not have permission to update this task',
-        );
       }
 
       // Chama o método padrão update para salvar as alterações
@@ -62,29 +74,31 @@ export default factories.createCoreController(
       return response;
     },
 
-    // Sobrescreve o método delete para permitir que o usuário delete suas próprias tarefas
     async delete(ctx) {
       const user = ctx.state.user;
-      if (!user) {
-        return ctx.unauthorized('You must be logged in to delete a task');
-      }
 
-      // Verifica se a tarefa existe
+      // Aqui, o id se refere ao documentId
       const { id } = ctx.params;
-      const task = await strapi.service('api::task.task').findOne(id);
 
-      if (!task) {
-        return ctx.notFound('Task not found');
-      }
-
-      // Verifica se a tarefa pertence ao usuário
-      if (task.users_permissions_user.id !== user.id) {
+      if (!user) {
         return ctx.unauthorized(
-          'You do not have permission to delete this task',
+          'Você deve estar logado para deletar suas tarefas',
         );
       }
 
-      // Chama o método padrão delete para remover a tarefa
+      const task = await strapi.documents('api::task.task').findOne({
+        documentId: id,
+        filters: {
+          user: user.id,
+        },
+      });
+
+      // Verifica se a tarefa existe
+      if (!task) {
+        return ctx.notFound('Tarefa não existe');
+      }
+
+      // Exclui a tarefa
       const response = await super.delete(ctx);
       return response;
     },
