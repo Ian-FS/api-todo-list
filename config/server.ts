@@ -5,4 +5,10 @@ export default ({ env }) => ({
   app: {
     keys: env.array('APP_KEYS', ['myKeyA', 'myKeyB']),
   },
+  // Configuração da sessão para cookies
+  session: {
+    cookie: {
+      secure: env.bool('COOKIE_SECURE', env('NODE_ENV') === 'production'), // Somente seguro em produção
+    },
+  },
 });
