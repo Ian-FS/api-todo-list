@@ -11,4 +11,4 @@ const forceSSL: Middleware = async (ctx, next) => {
   }
 };
 
-export default forceSSL;
+export default () => forceSSL;
