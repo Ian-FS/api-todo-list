@@ -9,4 +9,15 @@ export default [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
+  // Middleware customizado para redirecionamento de HTTP para HTTPS
+  async (ctx, next) => {
+    if (
+      ctx.headers['x-forwarded-proto'] !== 'https' &&
+      process.env.NODE_ENV === 'production'
+    ) {
+      ctx.redirect(`https://${ctx.host}${ctx.url}`);
+    } else {
+      await next();
+    }
+  },
 ];
