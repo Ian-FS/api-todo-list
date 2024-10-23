@@ -15,7 +15,7 @@ export default [
   // Registro do middleware customizado
   {
     name: 'force-ssl',
-    resolve: forceSSL, // Apontando para a função que criamos
+    resolve: () => forceSSL, // Função que retorna o middleware
     config: {},
   },
 ];
