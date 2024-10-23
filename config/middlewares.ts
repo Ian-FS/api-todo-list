@@ -12,10 +12,11 @@ export default [
   'strapi::favicon',
   'strapi::public',
 
-  // Registro do middleware customizado
+  // Middleware customizado para forçar HTTPS
   {
     name: 'force-ssl',
-    resolve: () => forceSSL, // Função que retorna o middleware
-    config: {},
+    config: {
+      resolve: forceSSL,
+    },
   },
 ];
