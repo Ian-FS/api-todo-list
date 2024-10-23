@@ -1,5 +1,3 @@
-import forceSSL from '../src/middlewares/force-ssl';
-
 export default [
   'strapi::logger',
   'strapi::errors',
@@ -11,12 +9,5 @@ export default [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
-
-  // Middleware customizado para forçar HTTPS
-  {
-    name: 'force-ssl',
-    config: {
-      resolve: forceSSL,
-    },
-  },
+  'force-ssl',
 ];

@@ -1,6 +1,6 @@
-import { Middleware } from 'koa';
+const { Middleware } = require('koa');
 
-const forceSSL: Middleware = async (ctx, next) => {
+const forceSSL = async (ctx, next) => {
   if (
     ctx.headers['x-forwarded-proto'] !== 'https' &&
     process.env.NODE_ENV === 'production'
@@ -11,4 +11,4 @@ const forceSSL: Middleware = async (ctx, next) => {
   }
 };
 
-export default forceSSL;
+module.exports = forceSSL;
