@@ -4,13 +4,21 @@ export default ({ env }) => ({
   url: env('REACT_APP_BACKEND_URL', 'http://localhost:1337'),
   app: {
     keys: env.array('APP_KEYS', ['myKeyA', 'myKeyB']),
-    proxy: true, // Confirmado que o proxy está ativado
   },
+  proxy: env.bool('IS_PROXIED', true),
+  ssl: {
+    enabled: true,
+  }, // Confirmado que o proxy está ativado
   session: {
     cookie: {
       secure: env('NODE_ENV') === 'production', // Força o cookie a ser enviado apenas em HTTPS
       httpOnly: true, // Recomendado para maior segurança
       sameSite: 'lax', // Controle de compartilhamento entre sites
+    },
+  },
+  settings: {
+    proxy: {
+      ssl: env.bool('PROXY_SSL', true),
     },
   },
 });
